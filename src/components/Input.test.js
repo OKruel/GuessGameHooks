@@ -1,20 +1,28 @@
 import React from 'react'
 
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import { findByTestAttr, checkProps } from '../../test/testUtils'
+import languageContext from '../contexts/languageContext'
 
 import Input from './Input'
 
 const defaultProps = { secretWord: 'party' }
 
-const setup = (props = defaultProps) => {
-    return shallow(<Input {...props} />)
+const setup = ({language, secretWord}) => {
+    language = language || 'en'
+    secretWord = secretWord || 'party'
+    return mount(
+        <languageContext.Provider value={language}>
+            <Input secretWord={secretWord}></Input>
+        </languageContext.Provider>
+
+    )
 }
 
 describe('Input functional component', () => {
     let wrapper;
     test('renders without errors', () => {
-        wrapper = setup()
+        wrapper = setup({})
         const component = findByTestAttr(wrapper, 'component-input')
         expect(component.length).toBe(1)
     })
@@ -30,8 +38,8 @@ describe('state controlled input field', () => {
         mockSetCurrentGuess.mockClear()
         React.useState = jest.fn(() => ['', mockSetCurrentGuess])
     });
-    test('state updates when value of the input state chenges', () => {
-        const wrapper = setup()
+    test('state updates when value of the input state changes', () => {
+        const wrapper = setup({})
         const inputBox = findByTestAttr(wrapper, 'input-box')
         
         inputBox.simulate('change', {target: { value: 'train' }})
@@ -39,9 +47,27 @@ describe('state controlled input field', () => {
     });
 
     test('when the button is clicked the input box gets cleared', () => {
-        wrapper = setup()
+        wrapper = setup({})
         findByTestAttr(wrapper, 'input-box').simulate('click', mockSetCurrentGuess(''))
 
         expect(mockSetCurrentGuess).toHaveBeenCalledWith('')
+    });
+});
+
+describe('languagePicker', () => {
+    test('correctly renders congrats string in english', () => {
+        const wrapper = setup({success: true})
+        const submitButton = findByTestAttr(wrapper, 'submit-button')
+        expect(submitButton.text()).toBe('Submit')
+    });
+    test('correctly renders congrats string in portuguese ', () => {
+        const wrapper = setup({success: true, language: 'ptbr'})
+        const submitButton = findByTestAttr(wrapper, 'submit-button')
+        expect(submitButton.text()).toBe('Submeter')
+    });
+    test('correctly renders congrats string in dutch', () => {
+        const wrapper = setup({success: true, language: 'nl'})
+        const submitButton = findByTestAttr(wrapper, 'submit-button')
+        expect(submitButton.text()).toBe('voorleggen')
     });
 });
