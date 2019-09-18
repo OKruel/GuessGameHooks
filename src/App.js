@@ -51,7 +51,6 @@ function App() {
   return (
     <div className="container" data-test='component-app' >
       <Input secretWord={state.secretWord}/>
-      {console.log(state)}
       {state.secretWord}
       
     </div>
