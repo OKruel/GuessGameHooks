@@ -32,7 +32,6 @@ const Input = props => {
                     onClick={event => handleSubmit(event)}
                 >Submit</button>
             </form>
-            {console.log(currentGuess)}
         </div>
     )
 }
