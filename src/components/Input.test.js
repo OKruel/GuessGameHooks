@@ -2,18 +2,23 @@ import React from 'react'
 
 import { shallow, mount } from 'enzyme'
 import { findByTestAttr, checkProps } from '../../test/testUtils'
+
 import languageContext from '../contexts/languageContext'
+import successContext from '../contexts/successContext'
 
 import Input from './Input'
 
 const defaultProps = { secretWord: 'party' }
 
-const setup = ({language, secretWord}) => {
+const setup = ({ language, secretWord, success }) => {
     language = language || 'en'
     secretWord = secretWord || 'party'
+    success = success || false
     return mount(
         <languageContext.Provider value={language}>
-            <Input secretWord={secretWord}></Input>
+            <successContext.SuccessProvider value={[success, jest.fn()]}>
+                <Input secretWord={secretWord}></Input>
+            </successContext.SuccessProvider>
         </languageContext.Provider>
 
     )
@@ -41,8 +46,8 @@ describe('state controlled input field', () => {
     test('state updates when value of the input state changes', () => {
         const wrapper = setup({})
         const inputBox = findByTestAttr(wrapper, 'input-box')
-        
-        inputBox.simulate('change', {target: { value: 'train' }})
+
+        inputBox.simulate('change', { target: { value: 'train' } })
         expect(mockSetCurrentGuess).toHaveBeenCalledWith('train')
     });
 
@@ -56,18 +61,23 @@ describe('state controlled input field', () => {
 
 describe('languagePicker', () => {
     test('correctly renders congrats string in english', () => {
-        const wrapper = setup({success: true})
+        const wrapper = setup({ language: 'en' })
         const submitButton = findByTestAttr(wrapper, 'submit-button')
         expect(submitButton.text()).toBe('Submit')
     });
     test('correctly renders congrats string in portuguese ', () => {
-        const wrapper = setup({success: true, language: 'ptbr'})
+        const wrapper = setup({ language: 'ptbr' })
         const submitButton = findByTestAttr(wrapper, 'submit-button')
         expect(submitButton.text()).toBe('Submeter')
     });
     test('correctly renders congrats string in dutch', () => {
-        const wrapper = setup({success: true, language: 'nl'})
+        const wrapper = setup({ language: 'nl' })
         const submitButton = findByTestAttr(wrapper, 'submit-button')
         expect(submitButton.text()).toBe('voorleggen')
     });
+});
+
+test('input component is empty when success is true', () => {
+    const wrapper = setup({secretWord: 'party', success: true})
+    expect(wrapper.isEmptyRender()).toBe(true)
 });

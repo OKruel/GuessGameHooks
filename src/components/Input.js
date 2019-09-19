@@ -1,26 +1,23 @@
 import React from 'react'
 import Proptypes from 'prop-types'
 
+import successContext from '../contexts/successContext'
 import languageContext from '../contexts/languageContext'
+
 import stringsModule from '../helpers/strings'
 
 const Input = props => {
+    //!State from Context
     const language = React.useContext(languageContext)
-
+    const [success, setSuccess] = successContext.useSuccess()
+    //!Local state
     const [currentGuess, setCurrentGuess] = React.useState('')
 
-    const handleSubmit = event => {
-        event.preventDefault()
-        setCurrentGuess('')
-    }
-    
-    const handleChanges = event => {
-        const value = event.target.value
-        setCurrentGuess(value)
-    }
+    if (success) return null
 
     return (
         <div data-test='component-input'>
+            {props.secretWord}
             <form className='form-inline'>
                 <input
                     data-test='input-box'
@@ -28,12 +25,18 @@ const Input = props => {
                     type='text'
                     placeholder={stringsModule.getStringByLanguage(language, 'guessInputPlaceholder')}
                     value={currentGuess}
-                    onChange={event => handleChanges(event)}
+                    onChange={event => setCurrentGuess(event.target.value)}
                 />
                 <button
                     data-test='submit-button'
                     className='btn btn-primary mb-2'
-                    onClick={event => handleSubmit(event)}
+                    onClick={event => {
+                        event.preventDefault()
+                        if (currentGuess === props.secretWord) {
+                            setSuccess(true)
+                        }
+                        setCurrentGuess('')
+                    }}
                 >{stringsModule.getStringByLanguage(language, 'submit')}</button>
             </form>
         </div>
