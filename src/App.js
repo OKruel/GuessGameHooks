@@ -4,6 +4,7 @@ import './App.css';
 import hookActions from './actions/hookActions';
 import languageContext from './contexts/languageContext'
 import successContext from './contexts/successContext'
+import guessedWordContext from './contexts/guessedWordsContext'
 
 import LanguagePicker from './components/LanguagePicker'
 import Input from './components/Input'
@@ -29,7 +30,7 @@ export function reducer(state, action) {
 function App() {
   const [state, dispatch] = React.useReducer(
     reducer,
-    { secretWord: null, language: 'en'}
+    { secretWord: null, language: 'en' }
   )
 
   const setLanguage = (language) => dispatch({ type: 'setLanguage', payload: language })
@@ -53,11 +54,13 @@ function App() {
       <h1>Guess Word Game</h1>
       <languageContext.Provider value={state.language}>
         <LanguagePicker setLanguage={setLanguage}></LanguagePicker>
-        <successContext.SuccessProvider>
-          <Congrats ></Congrats>
-          <Input secretWord={state.secretWord} />
-        </successContext.SuccessProvider>
-        
+        <guessedWordContext.GuessedWordProvider>
+          <successContext.SuccessProvider>
+            <Congrats ></Congrats>
+            <Input secretWord={state.secretWord} />
+          </successContext.SuccessProvider>
+          <GuessedWords />
+        </guessedWordContext.GuessedWordProvider>
       </languageContext.Provider>>
 
     </div>
