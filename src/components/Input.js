@@ -6,6 +6,7 @@ import stringsModule from '../helpers/strings'
 
 const Input = props => {
     const language = React.useContext(languageContext)
+
     const [currentGuess, setCurrentGuess] = React.useState('')
 
     const handleSubmit = event => {

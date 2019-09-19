@@ -3,11 +3,14 @@ import './App.css';
 
 import hookActions from './actions/hookActions';
 import languageContext from './contexts/languageContext'
+import successContext from './contexts/successContext'
 
-import Input from './components/Input'
 import LanguagePicker from './components/LanguagePicker'
+import Input from './components/Input'
+import Congrats from './components/Congrats'
+import GuessedWords from './components/GuessedWords'
 
-function reducer(state, action) {
+export function reducer(state, action) {
   switch (action.type) {
     case 'setSecretWord':
       return {
@@ -26,16 +29,14 @@ function reducer(state, action) {
 function App() {
   const [state, dispatch] = React.useReducer(
     reducer,
-    { secretWord: null, language: 'en' }
+    { secretWord: null, language: 'en'}
   )
 
   const setLanguage = (language) => dispatch({ type: 'setLanguage', payload: language })
 
   const setSecretWord = (secretWord) => dispatch({ type: 'setSecretWord', payload: secretWord })
 
-
-  React.useEffect(
-    () => { hookActions.getSecretWord(setSecretWord) }, [])
+  React.useEffect(() => { hookActions.getSecretWord(setSecretWord) }, [])
 
   if (!state.secretWord) {
     return (
@@ -52,8 +53,11 @@ function App() {
       <h1>Guess Word Game</h1>
       <languageContext.Provider value={state.language}>
         <LanguagePicker setLanguage={setLanguage}></LanguagePicker>
-        <Input secretWord={state.secretWord} />
-        {state.secretWord}
+        <successContext.SuccessProvider>
+          <Congrats ></Congrats>
+          <Input secretWord={state.secretWord} />
+        </successContext.SuccessProvider>
+        
       </languageContext.Provider>>
 
     </div>
