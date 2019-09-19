@@ -61,7 +61,7 @@ function App() {
           </successContext.SuccessProvider>
           <GuessedWords />
         </guessedWordContext.GuessedWordProvider>
-      </languageContext.Provider>>
+      </languageContext.Provider>
 
     </div>
   );

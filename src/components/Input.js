@@ -3,14 +3,18 @@ import Proptypes from 'prop-types'
 
 import successContext from '../contexts/successContext'
 import languageContext from '../contexts/languageContext'
+import guessedWordsContext from '../contexts/guessedWordsContext'
 
 import stringsModule from '../helpers/strings'
+import { getLetterMatchCount } from '../helpers/index'
+import GuessedWords from './GuessedWords'
 
 const Input = props => {
-    //!State from Context
+    //*State from Context
     const language = React.useContext(languageContext)
     const [success, setSuccess] = successContext.useSuccess()
-    //!Local state
+    const [guessedWords, setguessedWord] = guessedWordsContext.useGuessedWord()
+    //*Local state
     const [currentGuess, setCurrentGuess] = React.useState('')
 
     if (success) return null
@@ -32,6 +36,11 @@ const Input = props => {
                     className='btn btn-primary mb-2'
                     onClick={event => {
                         event.preventDefault()
+                        //*Checking how many equal letters the guess and the secret word have
+                        const letterMatchCount = getLetterMatchCount(currentGuess, props.secretWord)
+                        const newGuessedWords = [...guessedWords, {guessedWord: currentGuess, letterMatchCount} ]
+                        setguessedWord(newGuessedWords)
+
                         if (currentGuess === props.secretWord) {
                             setSuccess(true)
                         }
